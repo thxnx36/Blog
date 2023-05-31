@@ -1,0 +1,24 @@
+{
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build"
+    },
+    "devDependencies": {
+        "@heroicons/react": "^1.0.6",
+        "autoprefixer": "^10.4.14",
+        "axios": "^1.1.2",
+        "laravel-vite-plugin": "^0.7.5",
+        "postcss": "^8.4.24",
+        "tailwindcss": "^3.3.2",
+        "vite": "^4.0.0"
+    },
+    "dependencies": {
+        "@heroicons/vue": "^2.0.18",
+        "@iconify/icons-heroicons-solid": "^1.2.6",
+        "@react-icons/all-files": "^4.1.0",
+        "heroicons-react": "^1.4.1",
+        "react-icons": "^4.9.0"
+    }
+}

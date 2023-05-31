@@ -1,0 +1,92 @@
+version: "3"
+
+networks:
+  laravel:
+    external:
+        name: proxy_network
+
+volumes:
+  db:
+
+services:
+  blog-db:
+    image: mariadb:latest
+    container_name: blog-db
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    tty: true
+    volumes:
+      - db:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: blog
+      MYSQL_USER: ntpscrt
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: password
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    networks:
+      - laravel
+    healthcheck:
+      test: out=$$(mysqladmin ping -h localhost -P 3306 -u root --password=password 2>&1); echo $$out | grep 'mysqld is alive' || { echo $$out; exit 1; }
+      interval: 15s
+      timeout: 10s
+      retries: 10
+
+  blog_web:
+    image: blog_web
+    container_name: blog_web
+    build:
+      context: .
+      dockerfile: ./docker/php-nginx.dockerfile
+    tty: true
+    restart: always
+    ports:
+      - 8080:8080
+    volumes:
+      - ./:/var/www/html
+    depends_on:
+      blog-db:
+        condition: service_healthy
+    environment:
+      APP_NAME: "Blog"
+      APP_DEBUG: true
+      APP_ENV: local
+      APP_KEY: base64:ZG5XDTU9e00eHi5fQAvcpymHMdVkIIm7mrhZzKKmXWg=
+      
+      APP_URL: http://api.blog.test
+      ASSET_URL: http://api.blog.test
+
+      DB_CONNECTION: mysql
+      DB_HOST: blog-db
+      DB_PORT: 3306
+      DB_DATABASE: blog
+      DB_USERNAME: ntpscrt
+      DB_PASSWORD: password
+
+      XDG_CONFIG_HOME: ./
+
+      FILAMENT_FILESYSTEM_DRIVER: spaces
+      FILESYSTEM_DISK: spaces
+
+      VIRTUAL_HOST: api.blog.test
+    networks:
+      - laravel
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    restart: always
+    container_name: blog-phpmyadmin
+    depends_on:
+      - blog-db
+    environment:
+      PMA_HOST: blog-db
+      PMA_USER: root
+      PMA_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: password
+
+      VIRTUAL_HOST: pma.blog.test
+    ports:
+      - 8081:80
+    networks:
+      - laravel
+    
