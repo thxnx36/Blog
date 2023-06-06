@@ -18,6 +18,7 @@
         "@heroicons/vue": "^2.0.18",
         "@iconify/icons-heroicons-solid": "^1.2.6",
         "@react-icons/all-files": "^4.1.0",
+        "artisan": "^0.1.2",
         "heroicons-react": "^1.4.1",
         "react-icons": "^4.9.0"
     }
